@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, query, where } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import {
     getAuth,
@@ -78,6 +78,30 @@ export const FirebaseProvider = ({ children }) => {
         return await getDownloadURL(ref(storage, path));
     }
 
+    const getBookById = async (id) => {
+        const decRef = doc(firestore, "books", id);
+        const result = await getDoc(decRef);
+        return result.data();
+    }
+
+    const placeOrder = async (book_id, qty) => {
+        const collRef = collection(firestore, "books", book_id, "orders");
+        const res = await addDoc(collRef, {
+            user_id: user.uid,
+            qty,
+        })
+        return res;
+    }
+
+    const fetchOrders = async () => {
+        if (!user || !user.uid) return null;
+        const collRef = collection(firestore, "books");
+        console.log(user.uid);
+        const qry = query(collRef, where("user_id", "==", user.uid));
+        const res = await getDocs(qry);
+        return res.docs;
+    }
+
     return (
         <FirebaseContext.Provider value={{
             signup,
@@ -86,7 +110,10 @@ export const FirebaseProvider = ({ children }) => {
             loggedIn,
             handleCreateList,
             getAllBooks,
-            getImage
+            getImage,
+            getBookById,
+            placeOrder,
+            fetchOrders
         }}>
             {children}
         </FirebaseContext.Provider>

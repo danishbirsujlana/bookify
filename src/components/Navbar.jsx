@@ -13,6 +13,7 @@ function NavbarC() {
                     <Nav className="me-auto">
                         <Nav.Link href="/">Home</Nav.Link>
                         <Nav.Link href="/list/add">Add Listing</Nav.Link>
+                        <Nav.Link href="/orders">Orders</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
